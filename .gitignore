@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+archive/*.mp3
+!archive/.gitkeep
+data/*.jsonl
+!data/.gitkeep
+state/*.json
+!state/.gitkeep
