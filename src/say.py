@@ -1,4 +1,4 @@
-"""say.py â€” single-shot TTS for a-loud-reader.
+"""say.py ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â single-shot TTS for a-loud-reader.
 
 Wraps the Edge TTS neural voices (no API key, online) behind a tiny CLI.
 The watcher (`loud-reader.ps1`) shells out to this so we get one engine to
@@ -26,6 +26,12 @@ import edge_tts  # type: ignore
 # Default voice. Edge's "Jenny" is a clean US English female voice that sounds
 # good for technical content. Users can override with --voice.
 DEFAULT_VOICE = "en-US-JennyNeural"
+
+# Piper offline TTS binary path. Override with --piper-bin or set A_LOUD_READER_PIPER.
+PIPER_BIN = os.environ.get("A_LOUD_READER_PIPER", r"C:\Users\olive\Projects\yt_auto\.tmp_media_verify_runs\tools\piper\piper\piper.exe")
+
+# Default Piper voice model (.onnx).
+DEFAULT_PIPER_MODEL = os.environ.get("A_LOUD_READER_MODEL", r"C:\Users\olive\Projects\yt_auto\.tmp_media_verify_runs\tools\piper-voices\en_US-lessac-medium\en_US-lessac-medium.onnx")
 
 # Default rate (% relative to the voice's natural pace). 0% = normal,
 # +10% = a touch faster, -10% = slower / more deliberate.
@@ -84,6 +90,9 @@ def main() -> int:
     # The actual text to speak. Optional because --list-voices takes no text.
     parser.add_argument("text", nargs="?", help="Text to speak. Omit when using --list-voices.")
     # Voice selection. Default is the friendly US English voice above.
+    parser.add_argument("--engine", choices=["edge", "piper"], default="edge", help="TTS engine: edge (online, neural) or piper (offline).")
+    parser.add_argument("--piper-bin", default=PIPER_BIN, help="Path to the piper executable.")
+    parser.add_argument("--piper-model", default=DEFAULT_PIPER_MODEL, help="Path to the Piper .onnx voice model.")
     parser.add_argument("--voice", default=DEFAULT_VOICE, help=f"Edge voice name (default: {DEFAULT_VOICE})")
     # Rate is a percentage string like +10% / -5%. Edge-TTS parses it.
     parser.add_argument("--rate", default=DEFAULT_RATE, help="Speech rate, e.g. +10%% (default: +0%%)")
@@ -116,7 +125,7 @@ def main() -> int:
     # Branch 3: synthesize the speech and write the MP3.
     try:
         asyncio.run(_synthesize_to_mp3(args.text, args.voice, args.rate, args.pitch, args.out))
-    except Exception as e:  # noqa: BLE001 â€” edge-tts raises a few different types; collapse them.
+    except Exception as e:  # noqa: BLE001 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â edge-tts raises a few different types; collapse them.
         print(f"error: TTS failed: {e}", file=sys.stderr)
         return 1
     # Hand the MP3 to a background player. We deliberately avoid `os.startfile`
@@ -141,26 +150,54 @@ def main() -> int:
     # and opens the file with whatever app is associated with .mp3.
     if args.play and os.name == "nt":
         try:
-            import subprocess
-            si = subprocess.STARTUPINFO()
-            si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            si.wShowWindow = 0
-            subprocess.Popen(
-                ["powershell", "-NoProfile", "-WindowStyle", "Hidden",
-                 "-Command", f"Start-Process -FilePath \u0027{args.out}\u0027 -WindowStyle Hidden"],
-                creationflags=0x08000000,
-                startupinfo=si,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
+            import ctypes
+            import ctypes.wintypes
+            winmm = ctypes.WinDLL("winmm")
+            alias = f"alr_{int(time.time()*1000) % 100000}"
+            quoted = args.out.replace(chr(34), chr(92) + chr(34))
+            send = winmm.mciSendStringW
+            send.argtypes = [ctypes.wintypes.LPCWSTR, ctypes.wintypes.LPWSTR, ctypes.c_uint, ctypes.c_void_p]
+            send.restype  = ctypes.c_uint
+            buf = ctypes.create_unicode_buffer(256)
+            send("open \"" + quoted + "\" type mpegvideo alias " + alias, buf, 255, None)
+            send("play " + alias, buf, 255, None)
         except Exception as e:
-            print(f"[warn] hidden play failed: {e}", file=sys.stderr)
-
+            print("[warn] winmm MCI play failed: " + str(e), file=sys.stderr)
     # Print the path so the caller (e.g. the PowerShell watcher) can verify it landed.
     print(args.out)
     return 0
 
 
+
+
+def synth_piper(text: str, voice_model: str, out_path: str) -> None:
+    """Synthesize `text` to `out_path` using the Piper offline TTS binary.
+
+    `voice_model` is the path to the .onnx model. The matching .onnx.json
+    config is expected to sit next to it. Piper writes a WAV; we then
+    convert to MP3 with ffmpeg so the watcher can play it via winmm.
+    """
+    import subprocess, shutil, tempfile, wave
+    if not os.path.exists(voice_model):
+        raise FileNotFoundError("piper model not found: " + voice_model)
+    # Piper writes WAV. Stage to a temp file then convert to MP3.
+    tmp_wav = out_path + ".wav.tmp"
+    proc = subprocess.run(
+        [PIPER_BIN, "--model", voice_model, "--output_file", tmp_wav],
+        input=text.encode("utf-8"), capture_output=True, check=False
+    )
+    if proc.returncode != 0:
+        raise RuntimeError("piper failed: " + proc.stderr.decode("utf-8", "ignore"))
+    # Convert WAV to MP3 via ffmpeg if present; otherwise rename .wav.tmp -> .wav.
+    ffmpeg = shutil.which("ffmpeg")
+    if ffmpeg:
+        subprocess.run(
+            [ffmpeg, "-y", "-loglevel", "error", "-i", tmp_wav, "-codec:a", "libmp3lame", "-qscale:a", "4", out_path],
+            check=True
+        )
+        os.remove(tmp_wav)
+    else:
+        os.rename(tmp_wav, out_path.replace(".mp3", ".wav"))
 
 
 def synth(text: str, voice: str, rate: str, pitch: str, out_path: str) -> None:
@@ -170,6 +207,9 @@ def synth(text: str, voice: str, rate: str, pitch: str, out_path: str) -> None:
     spin a tiny event loop per call. This is fine for our throughput
     (one turn at a time, not a stream).
     """
+    if _ENGINE == "piper":
+        synth_piper(text, _PIPER_MODEL, out_path)
+        return
     asyncio.run(_synthesize_to_mp3(text, voice, rate, pitch, out_path))
 
 # Standard Python idiom: only run main() when this file is executed directly,
@@ -180,8 +220,12 @@ def synth(text: str, voice: str, rate: str, pitch: str, out_path: str) -> None:
     Edge-TTS is async-only, but the watcher runs in a plain thread, so we
     spin a tiny event loop per call. Fine for one turn at a time.
     """
+    if _ENGINE == "piper":
+        synth_piper(text, _PIPER_MODEL, out_path)
+        return
     asyncio.run(_synthesize_to_mp3(text, voice, rate, pitch, out_path))
 
 if __name__ == "__main__":
     sys.exit(main())
+
 

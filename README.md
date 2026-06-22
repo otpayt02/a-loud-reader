@@ -133,10 +133,10 @@ a-loud-reader/
 
 ## State files (safe to delete)
 
-- `state/flags.json` — rebuilt with defaults if missing.
-- `state/positions.json` — cursor only; deleting it = re-read everything.
-- `state/pinned.json` — list of threads the user marked keep-forever.
-- `state/watcher.pid` — only present while the watcher is alive.
+- `state/flags.json` â€” rebuilt with defaults if missing.
+- `state/positions.json` â€” cursor only; deleting it = re-read everything.
+- `state/pinned.json` â€” list of threads the user marked keep-forever.
+- `state/watcher.pid` â€” only present while the watcher is alive.
 
 ## Archive policy
 
@@ -149,10 +149,10 @@ prevents rotation for that thread.
 
 ## Troubleshooting
 
-- "watcher not running" but flags say `master=true` — run `loud-reader start`.
-- No sound but MP3 exists in `archive/` — open the MP3 manually; your media
+- "watcher not running" but flags say `master=true` â€” run `loud-reader start`.
+- No sound but MP3 exists in `archive/` â€” open the MP3 manually; your media
   player may be muted.
-- TTS errors with no internet — Edge TTS is online-only. The watcher
+- TTS errors with no internet â€” Edge TTS is online-only. The watcher
   auto-falls back to Windows SAPI (robotic but always works).
 
 ## Smoke test
@@ -162,3 +162,26 @@ powershell -ExecutionPolicy Bypass -File .\scripts\smoke_test.ps1
 ```
 
 Should print `OK: smoke test produced an MP3 at ...\archive\smoke.mp3`.
+
+
+## Engines
+
+- `loud-reader engine edge` (default) -- Microsoft Edge neural voices, online, free, no key.
+- `loud-reader engine piper` -- Piper offline neural TTS, works without internet. Piper binary path is
+  set via `A_LOUD_READER_PIPER` (default points at the existing yt_auto install). Voice model via
+  `A_LOUD_READER_MODEL`. Both are picked up automatically.
+
+If the active engine fails (e.g. offline + edge), the watcher falls back to Windows SAPI
+(robotic, always works) and prints a warning to `state/watcher.log`.
+
+## Pinned threads
+
+Lines in `inbox.md` may include a thread prefix: `alpha:1p Hello` routes to thread `alpha`.
+Pin a thread so its MP3s land in `archive/pinned/<thread>/` (survives daily rotation):
+
+```
+loud-reader pin alpha
+loud-reader unpin alpha
+```
+
+`alpha:` and `work-thread:` style prefixes are both supported.

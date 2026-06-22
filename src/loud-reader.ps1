@@ -1,4 +1,4 @@
-# loud-reader.ps1 — the operator CLI for a-loud-reader.
+# loud-reader.ps1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the operator CLI for a-loud-reader.
 #
 # This is the single entry point a user types in their terminal. It flips
 # JSON state files that the Python watcher polls, and it manages the
@@ -26,7 +26,7 @@
 # Exit codes: 0 on success, 1 on bad usage, 2 on watcher failure.
 
 #Requires -Version 5.1
-# Strict mode catches typos in variable names — worth the noise during dev.
+# Strict mode catches typos in variable names ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â worth the noise during dev.
 Set-StrictMode -Version Latest
 
 # Resolve repo root from this script's location. Works whether the user
@@ -43,7 +43,7 @@ $pidPath    = Join-Path $stateDir 'watcher.pid'
 $logPath    = Join-Path $root 'state\watcher.log'
 $inboxPath  = Join-Path $root 'inbox\inbox.md'
 
-# Default flags — kept in sync with watcher._default_flags() in Python.
+# Default flags ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â kept in sync with watcher._default_flags() in Python.
 $defaultFlags = [pscustomobject]@{
     master       = $true
     codex        = $true
@@ -112,7 +112,9 @@ function Start-Watcher {
     # The watcher writes its own log to state/watcher.log for debugging.
     $psi = New-Object System.Diagnostics.ProcessStartInfo
     $psi.FileName               = (Get-Command python).Source
-    $psi.Arguments              = "-m watcher start"
+    $psi.Arguments              = "-u src\watcher.py start"
+    # Make `import say` work from src/watcher.py.
+    $psi.EnvironmentVariables["PYTHONPATH"] = "$root\src"
     $psi.WorkingDirectory       = $root
     $psi.UseShellExecute        = $false
     $psi.RedirectStandardOutput = $true
@@ -222,6 +224,10 @@ switch ($verb.ToLower()) {
         else { Write-Host 'usage: loud-reader archive on|off' ; exit 1 }
     }
     'voice'      { Set-FlagString 'voice' $args[1] }
+    'engine'    {
+        if ($args[1] -in @('edge','piper')) { Set-FlagString 'engine' $args[1] }
+        else { Write-Host 'usage: loud-reader engine edge|piper' ; exit 1 }
+    }
     'rate'       { Set-FlagString 'rate'  $args[1] }
     'start'      { Start-Watcher }
     'stop'       { Stop-Watcher }
@@ -231,7 +237,7 @@ switch ($verb.ToLower()) {
     'inbox'      { Write-Host $inboxPath }
     'pin'        {
         $f = Get-Flags
-        if (-not $f.pin_threads) { $f | Add-Member -NotePropertyName pin_threads -NotePropertyValue @{} -Force }
+if (-not ($f.pin_threads -is [hashtable])) { $f.pin_threads = @{} }
         $f.pin_threads."$($args[1])" = $true
         Set-Flags $f
         Write-Host "pinned $($args[1])"

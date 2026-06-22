@@ -1,4 +1,4 @@
-﻿# Runtime dependencies for a-loud-reader.
+# Runtime dependencies for a-loud-reader.
 # Tested with Python 3.12 on Windows 10/11.
 edge-tts>=7.0     # Microsoft Edge neural TTS, free, no API key.
 watchdog>=4.0     # Cross-platform filesystem event watcher (inbox monitoring).
