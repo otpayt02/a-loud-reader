@@ -195,3 +195,24 @@ See ONBOARDING.md for the full step-by-step. If anything feels off, run `scripts
 
 Run `loud-reader tray` to get a system tray icon. Right-click for On/Off, Pause, Codex/Clipboard/Engine toggles, voice cycle, rate, archive folder, quit.
 
+
+
+## Prompt-refinery meta-loop
+
+Every rough prompt you hand Codex can be routed through the local Prompt Refinery first.
+
+```powershell
+loud-reader refine "ship a feature that does X"
+```
+
+Returns the canonical execution prompt + critique template + suggested next prompt. The
+Refinery logs every interaction under `C:\Users\olive\Projects\portfolio_hub\prompt-refinery\conversations\`.
+
+Drop the `AGENTS.md` snippet from this repo into any Codex project so Codex auto-runs the
+refinery pass before answering.
+
+## Definition of Done
+
+Every project should have a one-sentence DoD before code is written. Run `loud-reader dod`
+to scaffold one interactively, or copy `scripts\DEFINITION_OF_DONE_TEMPLATE.md` into your
+project root.
