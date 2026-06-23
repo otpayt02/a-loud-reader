@@ -133,10 +133,10 @@ a-loud-reader/
 
 ## State files (safe to delete)
 
-- `state/flags.json` â€” rebuilt with defaults if missing.
-- `state/positions.json` â€” cursor only; deleting it = re-read everything.
-- `state/pinned.json` â€” list of threads the user marked keep-forever.
-- `state/watcher.pid` â€” only present while the watcher is alive.
+- `state/flags.json` Ã¢â‚¬â€ rebuilt with defaults if missing.
+- `state/positions.json` Ã¢â‚¬â€ cursor only; deleting it = re-read everything.
+- `state/pinned.json` Ã¢â‚¬â€ list of threads the user marked keep-forever.
+- `state/watcher.pid` Ã¢â‚¬â€ only present while the watcher is alive.
 
 ## Archive policy
 
@@ -149,10 +149,10 @@ prevents rotation for that thread.
 
 ## Troubleshooting
 
-- "watcher not running" but flags say `master=true` â€” run `loud-reader start`.
-- No sound but MP3 exists in `archive/` â€” open the MP3 manually; your media
+- "watcher not running" but flags say `master=true` Ã¢â‚¬â€ run `loud-reader start`.
+- No sound but MP3 exists in `archive/` Ã¢â‚¬â€ open the MP3 manually; your media
   player may be muted.
-- TTS errors with no internet â€” Edge TTS is online-only. The watcher
+- TTS errors with no internet Ã¢â‚¬â€ Edge TTS is online-only. The watcher
   auto-falls back to Windows SAPI (robotic but always works).
 
 ## Smoke test
@@ -185,3 +185,13 @@ loud-reader unpin alpha
 ```
 
 `alpha:` and `work-thread:` style prefixes are both supported.
+
+
+## Onboarding
+
+See ONBOARDING.md for the full step-by-step. If anything feels off, run `scripts\\diagnose.ps1` for an evidence-based health check.
+
+## Tray app
+
+Run `loud-reader tray` to get a system tray icon. Right-click for On/Off, Pause, Codex/Clipboard/Engine toggles, voice cycle, rate, archive folder, quit.
+

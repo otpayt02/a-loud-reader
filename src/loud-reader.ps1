@@ -1,4 +1,4 @@
-# loud-reader.ps1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â the operator CLI for a-loud-reader.
+# loud-reader.ps1 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â the operator CLI for a-loud-reader.
 #
 # This is the single entry point a user types in their terminal. It flips
 # JSON state files that the Python watcher polls, and it manages the
@@ -26,7 +26,7 @@
 # Exit codes: 0 on success, 1 on bad usage, 2 on watcher failure.
 
 #Requires -Version 5.1
-# Strict mode catches typos in variable names ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â worth the noise during dev.
+# Strict mode catches typos in variable names ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â worth the noise during dev.
 Set-StrictMode -Version Latest
 
 # Resolve repo root from this script's location. Works whether the user
@@ -43,12 +43,13 @@ $pidPath    = Join-Path $stateDir 'watcher.pid'
 $logPath    = Join-Path $root 'state\watcher.log'
 $inboxPath  = Join-Path $root 'inbox\inbox.md'
 
-# Default flags ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â kept in sync with watcher._default_flags() in Python.
+# Default flags ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â kept in sync with watcher._default_flags() in Python.
 $defaultFlags = [pscustomobject]@{
     master       = $true
     codex        = $true
     clipboard    = $false
     archive_mp3  = $true
+    toast_on_speak = $false
     pin_threads  = @{}
     engine       = 'edge'
     voice        = 'en-US-JennyNeural'
@@ -250,5 +251,25 @@ if (-not ($f.pin_threads -is [hashtable])) { $f.pin_threads = @{} }
             Write-Host "unpinned $($args[1])"
         } else { Write-Host "not pinned: $($args[1])" }
     }
+    'toast'      {
+        if ($args[1] -eq 'on')  { Set-FlagBool 'toast_on_speak' $true }
+        elseif ($args[1] -eq 'off') { Set-FlagBool 'toast_on_speak' $false }
+        else { Write-Host 'usage: loud-reader toast on|off' ; exit 1 }
+    }
+    'tray'       {
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = (Get-Command python).Source
+        $psi.Arguments = '-u src\tray.py'
+        $psi.WorkingDirectory = $root
+        $psi.UseShellExecute = $false
+        $psi.EnvironmentVariables['PYTHONPATH'] = '$root\src'
+        $psi.CreateNoWindow = $true
+        [void][System.Diagnostics.Process]::Start($psi)
+        Write-Host 'tray app started'
+    }
+
     default      { Write-Host "unknown verb: $verb"; Write-Host 'try: on | off | status | codex on|off | clipboard on|off | archive on|off | voice <name> | rate <+-N%> | start | stop | tail | read <token> | reset-cursor | inbox | pin <id> | unpin <id>'; exit 1 }
 }
+
+
+

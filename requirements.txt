@@ -4,3 +4,7 @@ edge-tts>=7.0     # Microsoft Edge neural TTS, free, no API key.
 watchdog>=4.0     # Cross-platform filesystem event watcher (inbox monitoring).
 pyperclip>=1.8    # Clipboard polling for the optional clipboard listener.
 pywin32>=306      # Windows-only helpers (clipboard fallback, kill on stop).
+pystray>=0.19
+Pillow>=10.0
+plyer>=2.1
+

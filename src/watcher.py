@@ -106,6 +106,7 @@ def _default_flags():
         "master": True,
         "codex": True,
         "clipboard": False,
+        "toast_on_speak": False,
         "archive_mp3": True,
         "pin_threads": {},
         "engine": "edge",
@@ -186,6 +187,7 @@ def _speak(text, flags, thread="default"):
             out_path=str(out_path),
         )
         _play_in_background(str(out_path))
+        _notify_toast("a-loud-reader spoke", text, flags)
     except Exception as e:  # noqa: BLE001
         print("[warn] edge-tts failed:", e, file=sys.stderr)
         _sapi_speak(text)
@@ -241,6 +243,27 @@ def _play_in_background(mp3_path):
 
     print("[warn] no background player available; MP3 left at", mp3_path, file=sys.stderr)
 
+
+
+
+def _notify_toast(title, message, flags):
+    """Show a Windows toast when a turn is spoken.
+
+    Off by default (the ``toast_on_speak`` flag). Uses ``plyer`` if installed,
+    else falls back to a no-op. Never raises.
+    """
+    if not flags.get("toast_on_speak", False):
+        return
+    try:
+        from plyer import notification  # type: ignore
+        notification.notify(
+            title=title,
+            message=message[:200],
+            app_name="a-loud-reader",
+            timeout=3,
+        )
+    except Exception as e:  # noqa: BLE001
+        print("[warn] toast failed:", e, file=sys.stderr)
 
 def _sapi_speak(text):
     """Offline TTS via Windows SAPI (robotic but always works)."""
@@ -443,5 +466,6 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
 
 
